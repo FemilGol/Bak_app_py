@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>My Bakery</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #e0e7ff 0%, #f3f8ff 50%, #e0f7fa 100%);
+        }
+        .navbar-custom {
+            background: linear-gradient(90deg, #0d47a1 60%, #00bcd4 100%);
+            box-shadow: 0 2px 12px rgba(13,71,161,0.08);
+        }
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+            letter-spacing: 1px;
+            color: #fff !important;
+        }
+        .navbar-nav .nav-link {
+            color: #e3f2fd !important;
+            font-weight: 500;
+            margin: 0 10px;
+            border-radius: 8px;
+            transition: background 0.2s, color 0.2s;
+        }
+        .navbar-nav .nav-link:hover, .navbar-nav .nav-link.active {
+            background: #fff;
+            color: #0d47a1 !important;
+        }
+        .profile-avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: #fff;
+            border: 2px solid #0d47a1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            color: #0d47a1;
+            margin-right: 10px;
+        }
+        .profile-name {
+            font-weight: 600;
+            color: #222;
+            font-size: 1.1rem;
+        }
+        .profile-email {
+            font-size: 0.95rem;
+            color: #666;
+        }
+        .dropdown-menu {
+            border-radius: 14px;
+            min-width: 220px;
+        }
+        .dropdown-item:active {
+            background: #e3f2fd;
+            color: #0d47a1;
+        }
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-custom">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="{% url 'home' %}">My Bakery</a>
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav ms-auto align-items-center">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'cart' %}">🛒 Your Cart</a>
+                </li>
+                {% if user.is_authenticated %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <span class="profile-avatar">{{ user.username|slice:":1"|upper }}</span>
+                            <div class="d-none d-md-flex flex-column align-items-start">
+                                <span class="profile-name">
+                                    {{ user.get_full_name|default:user.username }}
+                                </span>
+                                <span class="profile-email">{{ user.email }}</span>
+                            </div>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="profileDropdown">
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center text-danger" href="{% url 'logout' %}">
+                                    <span class="me-2">&#128682;</span> <b>Logout</b>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                {% else %}
+                    <li class="nav-item"><a class="nav-link" href="{% url 'login' %}">Login</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'signup' %}">Sign Up</a></li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container mt-4">
+    {% if messages %}
+    <div class="mt-2">
+        {% for message in messages %}
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {% block content %} {% endblock %}
+</div>
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

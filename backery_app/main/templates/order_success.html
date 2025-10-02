@@ -1,0 +1,28 @@
+{# order_success.html #}
+
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5 text-center">
+    <div class="card shadow-lg border-0 rounded-3 p-5">
+        <div class="card-body">
+            <h2 class="display-4 text-success mb-4">Order Placed Successfully!</h2>
+            <p class="lead mb-4">Thank you for your purchase. Your order is being processed.</p>
+            <i class="bi bi-check-circle-fill text-success" style="font-size: 5rem;"></i>
+            <hr class="my-4">
+            <p>You will receive an email confirmation shortly.</p>
+            <a href="{% url 'home' %}" class="btn btn-primary btn-lg mt-3">Continue Shopping</a>
+        </div>
+    </div>
+</div>
+
+<style>
+    .display-4 {
+        font-weight: bold;
+    }
+    .bi-check-circle-fill {
+        color: #28a745; 
+    }
+</style>
+{% endblock %}

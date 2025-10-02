@@ -1,0 +1,188 @@
+{# checkout.html #}
+
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center mb-5 checkout-heading">Proceed to Checkout</h2>
+
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-lg border-0 rounded-3 mb-4">
+                <div class="card-header bg-primary text-white rounded-top-3">
+                    <h4 class="mb-0">Order Summary</h4>
+                </div>
+                <div class="card-body p-4">
+                    <ul class="list-group list-group-flush mb-4">
+                        {% for item in cart_items %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-1">{{ item.product.name }}</h6>
+                                <small class="text-muted">Quantity: {{ item.quantity }} x ₹{{ item.product.price|floatformat:2 }}</small>
+                            </div>
+                            <span class="fw-bold">₹{{ item.total_price_calculated|floatformat:2 }}</span>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    <div class="d-flex justify-content-between align-items-center border-top pt-3">
+                        <h4 class="mb-0">Total:</h4>
+                        <h3 class="mb-0 text-primary fw-bold">₹{{ total_price|floatformat:2 }}</h3>
+                    </div>
+                </div>
+                <div class="card-footer text-muted text-end">
+                    Order Date: {{ current_datetime|date:"F j, Y" }} <br>
+                    Order Time: {{ current_datetime|date:"P" }}
+                </div>
+            </div>
+
+            <div class="card shadow-lg border-0 rounded-3 mb-4">
+                <div class="card-header bg-success text-white rounded-top-3">
+                    <h4 class="mb-0">Payment Method</h4>
+                </div>
+                <div class="card-body p-4">
+                    <form method="post" action="{% url 'checkout' %}">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <div class="form-check payment-option">
+                                <input class="form-check-input" type="radio" name="payment_method" id="cod" value="cod" {% if selected_payment_method == 'cod' %}checked{% endif %}>
+                                <label class="form-check-label" for="cod">
+                                    <i class="bi bi-cash-stack me-2"></i> Cash on Delivery (COD)
+                                </label>
+                            </div>
+                            <div class="form-check payment-option mt-2">
+                                <input class="form-check-input" type="radio" name="payment_method" id="upi" value="upi" {% if selected_payment_method == 'upi' %}checked{% endif %}>
+                                <label class="form-check-label" for="upi">
+                                    <i class="bi bi-phone me-2"></i> UPI (Google Pay, Paytm, PhonePe, etc.)
+                                </label>
+                            </div>
+                    
+                            <div class="form-check payment-option mt-2">
+                                <input class="form-check-input" type="radio" name="payment_method" id="card" value="card">
+                                <label class="form-check-label" for="card">
+                                    <i class="bi bi-credit-card me-2"></i> Credit/Debit Card
+                                </label>
+                            </div> 
+                        </div>
+
+                        <div id="upi-details"  class="mb-3 p-3 border rounded-3 bg-light">
+                            <label for="upi_id" class="form-label fw-bold">Enter UPI ID:</label>
+                            <input type="text" class="form-control" id="upi_id" name="upi_id" placeholder="e.g., yourname@bankname" value="{{ upi_id_input|default:'' }}">
+                            <small class="form-text text-muted">Example: `yourname@oksbi` or `9876543210@paytm`</small>
+                        </div>
+
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg place-order-btn">Place Order</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const codRadio = document.getElementById('cod');
+        const upiRadio = document.getElementById('upi');
+        const upiDetailsDiv = document.getElementById('upi-details');
+        const upiIdInput = document.getElementById('upi_id');
+
+        function toggleUpiDetails() {
+            if (upiRadio.checked) {
+                upiDetailsDiv.style.display = 'block';
+                upiIdInput.setAttribute('required', 'required'); 
+            } else {
+                upiDetailsDiv.style.display = 'none';
+                upiIdInput.removeAttribute('required');
+                upiIdInput.value = ''; 
+            }
+        }
+
+        codRadio.addEventListener('change', toggleUpiDetails);
+        upiRadio.addEventListener('change', toggleUpiDetails);
+
+        
+        toggleUpiDetails();
+    });
+</script>
+
+
+<style>
+  
+    * {
+        box-sizing: border-box;
+    }
+
+    .checkout-heading {
+        font-size: 2.8rem;
+        font-weight: bold;
+        color: #8B4513;
+        border-bottom: 4px solid #D2B48C; 
+        display: inline-block;
+        padding-bottom: 10px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .card {
+        border-radius: 15px;
+        overflow: hidden; 
+    }
+
+    .card-header {
+        border-bottom: none;
+        padding: 1.5rem;
+        font-size: 1.25rem;
+    }
+
+    .card-header.bg-primary {
+        background: linear-gradient(90deg, #0d47a1 0%, #00bcd4 100%) !important;
+    }
+
+    .card-header.bg-success {
+        background: linear-gradient(90deg, #4CAF50 0%, #8BC34A 100%) !important;
+    }
+
+    .list-group-item {
+        border-color: #eee;
+        padding-top: 1rem;
+        padding-bottom: 1rem;
+    }
+
+    .payment-option label {
+        font-size: 1.1rem;
+        font-weight: 500;
+        color: #333;
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+    }
+
+    .payment-option input[type="radio"] {
+        margin-right: 0.75rem;
+        transform: scale(1.2); 
+    }
+
+    #upi-details {
+        border: 1px dashed #D2B48C !important; 
+    }
+
+    .place-order-btn {
+        background-color: #FF7043; 
+        border-color: #FF7043;
+        font-size: 1.3rem;
+        font-weight: bold;
+        padding: 0.75rem 1.5rem;
+        transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    .place-order-btn:hover {
+        background-color: #F4511E; 
+        border-color: #F4511E;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+    }
+</style>
+{% endblock %}
