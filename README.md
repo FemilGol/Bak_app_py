@@ -1,1 +1,1 @@
-# Bak_app_py
+Online bakery Store is a web application for browsing, filtering, and purchasing cakes and other items with user accounts, cart, and order management. The backend is built with Django and SQL, while the frontend provides a user-friendly interface for smooth purchasing  experience.
